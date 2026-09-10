@@ -1,0 +1,335 @@
+-- 100x LUCKY SERVER - Animated Key System
+-- LocalScript → StarterPlayer > StarterPlayerScripts
+
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local player = Players.LocalPlayer
+
+local gui = Instance.new("ScreenGui")
+gui.Name = "LuckyServerUltra"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+
+-- =========================
+-- HELPERS
+-- =========================
+
+local function corner(obj, radius)
+	local c = Instance.new("UICorner")
+	c.CornerRadius = UDim.new(0, radius)
+	c.Parent = obj
+	return c
+end
+
+local function tween(obj, time, props)
+	return TweenService:Create(
+		obj,
+		TweenInfo.new(time, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+		props
+	)
+end
+
+-- =========================
+-- LOADING SCREEN
+-- =========================
+
+local loading = Instance.new("Frame")
+loading.Size = UDim2.fromScale(1, 1)
+loading.BackgroundColor3 = Color3.fromRGB(5, 5, 12)
+loading.Parent = gui
+
+local loadTitle = Instance.new("TextLabel")
+loadTitle.Size = UDim2.new(1, 0, 0, 60)
+loadTitle.Position = UDim2.new(0, 0, 0.38, 0)
+loadTitle.BackgroundTransparency = 1
+loadTitle.Text = "✨ 100x LUCKY SERVER ✨"
+loadTitle.TextColor3 = Color3.new(1, 1, 1)
+loadTitle.TextScaled = true
+loadTitle.Font = Enum.Font.GothamBlack
+loadTitle.Parent = loading
+
+local loadText = Instance.new("TextLabel")
+loadText.Size = UDim2.new(1, 0, 0, 35)
+loadText.Position = UDim2.new(0, 0, 0.48, 0)
+loadText.BackgroundTransparency = 1
+loadText.Text = "Loading Lucky Server..."
+loadText.TextColor3 = Color3.fromRGB(180, 180, 255)
+loadText.TextScaled = true
+loadText.Font = Enum.Font.Gotham
+loadText.Parent = loading
+
+-- Loading dots animation
+task.spawn(function()
+	for i = 1, 3 do
+		loadText.Text = "Loading Lucky Server" .. string.rep(".", i)
+		task.wait(0.35)
+	end
+end)
+
+-- Wait before popup
+task.wait(2.5)
+
+-- =========================
+-- KEY SYSTEM
+-- =========================
+
+loading:Destroy()
+
+local keyFrame = Instance.new("Frame")
+keyFrame.Size = UDim2.new(0, 340, 0, 220)
+keyFrame.Position = UDim2.new(0.5, -170, 0.5, -110)
+keyFrame.BackgroundColor3 = Color3.fromRGB(12, 12, 22)
+keyFrame.BorderSizePixel = 0
+keyFrame.Parent = gui
+
+corner(keyFrame, 20)
+
+local keyStroke = Instance.new("UIStroke")
+keyStroke.Thickness = 4
+keyStroke.Parent = keyFrame
+
+-- Rainbow border
+task.spawn(function()
+	while keyFrame.Parent do
+		for h = 0, 1, 0.01 do
+			keyStroke.Color = Color3.fromHSV(h, 1, 1)
+			task.wait(0.025)
+		end
+	end
+end)
+
+local keyTitle = Instance.new("TextLabel")
+keyTitle.Size = UDim2.new(1, -20, 0, 45)
+keyTitle.Position = UDim2.new(0, 10, 0, 15)
+keyTitle.BackgroundTransparency = 1
+keyTitle.Text = "🔐 KEY SYSTEM"
+keyTitle.TextColor3 = Color3.new(1, 1, 1)
+keyTitle.TextScaled = true
+keyTitle.Font = Enum.Font.GothamBlack
+keyTitle.Parent = keyFrame
+
+local keyInfo = Instance.new("TextLabel")
+keyInfo.Size = UDim2.new(1, -30, 0, 35)
+keyInfo.Position = UDim2.new(0, 15, 0, 60)
+keyInfo.BackgroundTransparency = 1
+keyInfo.Text = "Enter the key to continue"
+keyInfo.TextColor3 = Color3.fromRGB(180, 180, 200)
+keyInfo.TextScaled = true
+keyInfo.Font = Enum.Font.Gotham
+keyInfo.Parent = keyFrame
+
+local keyBox = Instance.new("TextBox")
+keyBox.Size = UDim2.new(1, -40, 0, 45)
+keyBox.Position = UDim2.new(0, 20, 0, 100)
+keyBox.BackgroundColor3 = Color3.fromRGB(25, 25, 40)
+keyBox.PlaceholderText = "Enter key..."
+keyBox.Text = ""
+keyBox.TextColor3 = Color3.new(1, 1, 1)
+keyBox.PlaceholderColor3 = Color3.fromRGB(120, 120, 140)
+keyBox.TextScaled = true
+keyBox.Font = Enum.Font.GothamBold
+keyBox.Parent = keyFrame
+
+corner(keyBox, 10)
+
+local unlock = Instance.new("TextButton")
+unlock.Size = UDim2.new(1, -40, 0, 40)
+unlock.Position = UDim2.new(0, 20, 0, 160)
+unlock.BackgroundColor3 = Color3.fromRGB(90, 60, 255)
+unlock.Text = "UNLOCK ✨"
+unlock.TextColor3 = Color3.new(1, 1, 1)
+unlock.TextScaled = true
+unlock.Font = Enum.Font.GothamBlack
+unlock.Parent = keyFrame
+
+corner(unlock, 10)
+
+-- =========================
+-- MAIN GUI
+-- =========================
+
+local function createMainGUI()
+
+	keyFrame:Destroy()
+
+	local frame = Instance.new("Frame")
+	frame.Size = UDim2.new(0, 360, 0, 250)
+	frame.Position = UDim2.new(0.5, -180, 0.5, -125)
+	frame.BackgroundColor3 = Color3.fromRGB(8, 8, 18)
+	frame.BorderSizePixel = 0
+	frame.Parent = gui
+
+	corner(frame, 22)
+
+	-- Glow
+	local glow = Instance.new("UIStroke")
+	glow.Thickness = 5
+	glow.Parent = frame
+
+	task.spawn(function()
+		while frame.Parent do
+			for h = 0, 1, 0.01 do
+				glow.Color = Color3.fromHSV(h, 1, 1)
+				task.wait(0.02)
+			end
+		end
+	end)
+
+	-- Title
+	local title = Instance.new("TextLabel")
+	title.Size = UDim2.new(1, -60, 0, 55)
+	title.Position = UDim2.new(0, 20, 0, 12)
+	title.BackgroundTransparency = 1
+	title.Text = "🌈 100x LUCKY SERVER"
+	title.TextColor3 = Color3.new(1, 1, 1)
+	title.TextScaled = true
+	title.Font = Enum.Font.GothamBlack
+	title.Parent = frame
+
+	-- Close
+	local close = Instance.new("TextButton")
+	close.Size = UDim2.new(0, 38, 0, 38)
+	close.Position = UDim2.new(1, -48, 0, 10)
+	close.BackgroundColor3 = Color3.fromRGB(220, 45, 70)
+	close.Text = "×"
+	close.TextColor3 = Color3.new(1, 1, 1)
+	close.TextScaled = true
+	close.Font = Enum.Font.GothamBlack
+	close.Parent = frame
+
+	corner(close, 10)
+
+	close.MouseButton1Click:Connect(function()
+		frame:Destroy()
+	end)
+
+	-- Description
+	local desc = Instance.new("TextLabel")
+	desc.Size = UDim2.new(1, -30, 0, 45)
+	desc.Position = UDim2.new(0, 15, 0, 65)
+	desc.BackgroundTransparency = 1
+	desc.Text = "⚡ Experience the ultimate Lucky Server!"
+	desc.TextColor3 = Color3.fromRGB(190, 190, 210)
+	desc.TextScaled = true
+	desc.Font = Enum.Font.Gotham
+	desc.Parent = frame
+
+	-- Main button
+	local luckyButton = Instance.new("TextButton")
+	luckyButton.Size = UDim2.new(1, -40, 0, 55)
+	luckyButton.Position = UDim2.new(0, 20, 0, 120)
+	luckyButton.BackgroundColor3 = Color3.fromRGB(85, 55, 255)
+	luckyButton.Text = "🚀 ENTER LUCKY SERVER"
+	luckyButton.TextColor3 = Color3.new(1, 1, 1)
+	luckyButton.TextScaled = true
+	luckyButton.Font = Enum.Font.GothamBlack
+	luckyButton.Parent = frame
+
+	corner(luckyButton, 14)
+
+	-- Hover/click animation
+	luckyButton.MouseButton1Click:Connect(function()
+
+		tween(
+			luckyButton,
+			0.12,
+			{Size = UDim2.new(1, -50, 0, 50)}
+		):Play()
+
+		task.wait(0.12)
+
+		luckyButton.Text = "⚠️ DEVICE CHECK..."
+
+		task.wait(0.7)
+
+		player:Kick("Sorry, your device can't handle this server.")
+	end)
+
+	-- Footer
+	local footer = Instance.new("TextLabel")
+	footer.Size = UDim2.new(1, -30, 0, 35)
+	footer.Position = UDim2.new(0, 15, 0, 190)
+	footer.BackgroundTransparency = 1
+	footer.Text = "🔐 Secured • Mobile Supported"
+	footer.TextColor3 = Color3.fromRGB(130, 130, 160)
+	footer.TextScaled = true
+	footer.Font = Enum.Font.Gotham
+	footer.Parent = frame
+
+	-- =========================
+	-- DRAGGING / MOBILE
+	-- =========================
+
+	local dragging = false
+	local dragStart
+	local startPos
+
+	frame.InputBegan:Connect(function(input)
+
+		if input.UserInputType == Enum.UserInputType.MouseButton1
+			or input.UserInputType == Enum.UserInputType.Touch then
+
+			dragging = true
+			dragStart = input.Position
+			startPos = frame.Position
+
+			input.Changed:Connect(function()
+				if input.UserInputState == Enum.UserInputState.End then
+					dragging = false
+				end
+			end)
+		end
+	end)
+
+	game:GetService("UserInputService").InputChanged:Connect(function(input)
+
+		if dragging and (
+			input.UserInputType == Enum.UserInputType.MouseMovement
+			or input.UserInputType == Enum.UserInputType.Touch
+		) then
+
+			local delta = input.Position - dragStart
+
+			frame.Position = UDim2.new(
+				startPos.X.Scale,
+				startPos.X.Offset + delta.X,
+				startPos.Y.Scale,
+				startPos.Y.Offset + delta.Y
+			)
+		end
+	end)
+
+	-- Popup animation
+	frame.Size = UDim2.new(0, 0, 0, 0)
+
+	tween(
+		frame,
+		0.6,
+		{Size = UDim2.new(0, 360, 0, 250)}
+	):Play()
+end
+
+-- Key check
+unlock.MouseButton1Click:Connect(function()
+
+	if keyBox.Text == "🔐" then
+		keyInfo.Text = "✅ Key accepted!"
+		keyInfo.TextColor3 = Color3.fromRGB(80, 255, 140)
+
+		task.wait(0.6)
+		createMainGUI()
+	else
+		keyInfo.Text = "❌ Invalid key!"
+		keyInfo.TextColor3 = Color3.fromRGB(255, 80, 100)
+
+		tween(keyFrame, 0.08, {
+			Position = UDim2.new(0.5, -175, 0.5, -110)
+		}):Play()
+
+		task.wait(0.1)
+
+		tween(keyFrame, 0.08, {
+			Position = UDim2.new(0.5, -165, 0.5, -110)
+		}):Play()
+	end
+end)
