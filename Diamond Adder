@@ -1,0 +1,438 @@
+--[[
+    HANABISI HUB
+    VISUAL DIAMOND ADDER
+    PHONE-FRIENDLY UI — ROBLOX STUDIO
+    Credit: By itstryss
+]]
+
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+
+local Player = Players.LocalPlayer
+local PlayerGui = Player:WaitForChild("PlayerGui")
+
+local Old = PlayerGui:FindFirstChild("HanabisiHub")
+if Old then
+	Old:Destroy()
+end
+
+-- COLORS
+local Purple = Color3.fromRGB(135, 45, 255)
+local LightPurple = Color3.fromRGB(190, 110, 255)
+local Dark = Color3.fromRGB(12, 8, 25)
+local Panel = Color3.fromRGB(23, 14, 42)
+local White = Color3.fromRGB(255, 255, 255)
+local Muted = Color3.fromRGB(180, 155, 220)
+
+-- SCREEN GUI
+local Gui = Instance.new("ScreenGui")
+Gui.Name = "HanabisiHub"
+Gui.ResetOnSpawn = false
+Gui.IgnoreGuiInset = true
+Gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+Gui.Parent = PlayerGui
+
+-- MAIN PHONE-FRIENDLY FRAME
+local Main = Instance.new("Frame")
+Main.Name = "Main"
+Main.Size = UDim2.fromScale(0.92, 0.62)
+Main.Position = UDim2.fromScale(0.5, 0.5)
+Main.AnchorPoint = Vector2.new(0.5, 0.5)
+Main.BackgroundColor3 = Dark
+Main.BorderSizePixel = 0
+Main.ClipsDescendants = true
+Main.Parent = Gui
+
+local MainCorner = Instance.new("UICorner")
+MainCorner.CornerRadius = UDim.new(0, 16)
+MainCorner.Parent = Main
+
+local MainStroke = Instance.new("UIStroke")
+MainStroke.Color = Purple
+MainStroke.Thickness = 2
+MainStroke.Parent = Main
+
+-- RESPONSIVE SCALE
+local Scale = Instance.new("UIScale")
+Scale.Scale = 1
+Scale.Parent = Main
+
+-- HEADER
+local Header = Instance.new("Frame")
+Header.Size = UDim2.new(1, 0, 0.19, 0)
+Header.BackgroundColor3 = Color3.fromRGB(18, 10, 35)
+Header.BorderSizePixel = 0
+Header.Parent = Main
+
+local HeaderGradient = Instance.new("UIGradient")
+HeaderGradient.Color = ColorSequence.new({
+	ColorSequenceKeypoint.new(0, Color3.fromRGB(35, 12, 70)),
+	ColorSequenceKeypoint.new(1, Dark)
+})
+HeaderGradient.Parent = Header
+
+local Title = Instance.new("TextLabel")
+Title.BackgroundTransparency = 1
+Title.Position = UDim2.new(0.035, 0, 0.12, 0)
+Title.Size = UDim2.new(0.62, 0, 0.42, 0)
+Title.Font = Enum.Font.GothamBold
+Title.Text = "HANABISI HUB"
+Title.TextColor3 = White
+Title.TextScaled = true
+Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.Parent = Header
+
+local Subtitle = Instance.new("TextLabel")
+Subtitle.BackgroundTransparency = 1
+Subtitle.Position = UDim2.new(0.037, 0, 0.59, 0)
+Subtitle.Size = UDim2.new(0.68, 0, 0.24, 0)
+Subtitle.Font = Enum.Font.Gotham
+Subtitle.Text = "99 NIGHTS IN THE FOREST"
+Subtitle.TextColor3 = LightPurple
+Subtitle.TextScaled = true
+Subtitle.TextXAlignment = Enum.TextXAlignment.Left
+Subtitle.Parent = Header
+
+-- HIDE BUTTON
+local Hide = Instance.new("TextButton")
+Hide.Name = "Hide"
+Hide.Text = "—"
+Hide.Font = Enum.Font.GothamBold
+Hide.TextSize = 22
+Hide.TextColor3 = White
+Hide.BackgroundColor3 = Color3.fromRGB(45, 20, 80)
+Hide.Size = UDim2.fromOffset(34, 34)
+Hide.Position = UDim2.new(1, -80, 0, 10)
+Hide.Parent = Header
+
+local HideCorner = Instance.new("UICorner")
+HideCorner.CornerRadius = UDim.new(0, 9)
+HideCorner.Parent = Hide
+
+-- CLOSE BUTTON
+local Close = Instance.new("TextButton")
+Close.Name = "Close"
+Close.Text = "×"
+Close.Font = Enum.Font.GothamBold
+Close.TextSize = 25
+Close.TextColor3 = White
+Close.BackgroundColor3 = Color3.fromRGB(45, 20, 80)
+Close.Size = UDim2.fromOffset(34, 34)
+Close.Position = UDim2.new(1, -40, 0, 10)
+Close.Parent = Header
+
+local CloseCorner = Instance.new("UICorner")
+CloseCorner.CornerRadius = UDim.new(0, 9)
+CloseCorner.Parent = Close
+
+Close.MouseButton1Click:Connect(function()
+	Main.Visible = false
+end)
+
+-- SIDEBAR
+local Sidebar = Instance.new("Frame")
+Sidebar.Name = "Sidebar"
+Sidebar.Position = UDim2.new(0, 0, 0.19, 0)
+Sidebar.Size = UDim2.new(0.28, 0, 0.81, 0)
+Sidebar.BackgroundColor3 = Color3.fromRGB(15, 9, 29)
+Sidebar.BorderSizePixel = 0
+Sidebar.Parent = Main
+
+-- TAB
+local Tab = Instance.new("TextButton")
+Tab.Name = "DiamondMultiplier"
+Tab.Text = "💎  Diamond\nAdder"
+Tab.Font = Enum.Font.GothamBold
+Tab.TextSize = 12
+Tab.TextWrapped = true
+Tab.TextColor3 = White
+Tab.BackgroundColor3 = Purple
+Tab.Size = UDim2.new(0.9, 0, 0, 58)
+Tab.Position = UDim2.new(0.05, 0, 0.06, 0)
+Tab.Parent = Sidebar
+
+local TabCorner = Instance.new("UICorner")
+TabCorner.CornerRadius = UDim.new(0, 10)
+TabCorner.Parent = Tab
+
+-- CREDIT
+local Credit = Instance.new("TextLabel")
+Credit.BackgroundTransparency = 1
+Credit.Text = "By itstryss"
+Credit.Font = Enum.Font.GothamBold
+Credit.TextColor3 = LightPurple
+Credit.TextSize = 11
+Credit.Size = UDim2.new(1, 0, 0, 22)
+Credit.Position = UDim2.new(0, 0, 1, -35)
+Credit.Parent = Sidebar
+
+-- CONTENT
+local Content = Instance.new("Frame")
+Content.Name = "Content"
+Content.Position = UDim2.new(0.28, 0, 0.19, 0)
+Content.Size = UDim2.new(0.72, 0, 0.81, 0)
+Content.BackgroundColor3 = Dark
+Content.BorderSizePixel = 0
+Content.Parent = Main
+
+-- PAGE TITLE
+local PageTitle = Instance.new("TextLabel")
+PageTitle.BackgroundTransparency = 1
+PageTitle.Text = "💎 Diamond Adder"
+PageTitle.Font = Enum.Font.GothamBold
+PageTitle.TextColor3 = White
+PageTitle.TextScaled = true
+PageTitle.TextXAlignment = Enum.TextXAlignment.Left
+PageTitle.Size = UDim2.new(0.88, 0, 0, 32)
+PageTitle.Position = UDim2.new(0.06, 0, 0.05, 0)
+PageTitle.Parent = Content
+
+local PageDesc = Instance.new("TextLabel")
+PageDesc.BackgroundTransparency = 1
+PageDesc.Text = "Enter amount: 1 - 9999"
+PageDesc.Font = Enum.Font.Gotham
+PageDesc.TextColor3 = Muted
+PageDesc.TextSize = 11
+PageDesc.TextWrapped = true
+PageDesc.TextXAlignment = Enum.TextXAlignment.Left
+PageDesc.Size = UDim2.new(0.88, 0, 0, 28)
+PageDesc.Position = UDim2.new(0.06, 0, 0.15, 0)
+PageDesc.Parent = Content
+
+-- CARD
+local Card = Instance.new("Frame")
+Card.Name = "DiamondCard"
+Card.BackgroundColor3 = Panel
+Card.BorderSizePixel = 0
+Card.Position = UDim2.new(0.06, 0, 0.25, 0)
+Card.Size = UDim2.new(0.88, 0, 0.50, 0)
+Card.Parent = Content
+
+local CardCorner = Instance.new("UICorner")
+CardCorner.CornerRadius = UDim.new(0, 12)
+CardCorner.Parent = Card
+
+local CardStroke = Instance.new("UIStroke")
+CardStroke.Color = Color3.fromRGB(80, 35, 150)
+CardStroke.Thickness = 1
+CardStroke.Parent = Card
+
+-- ICON
+local Diamond = Instance.new("TextLabel")
+Diamond.BackgroundTransparency = 1
+Diamond.Text = "💎"
+Diamond.TextScaled = true
+Diamond.Size = UDim2.new(0.28, 0, 0.30, 0)
+Diamond.Position = UDim2.new(0.05, 0, 0.08, 0)
+Diamond.Parent = Card
+
+-- LABEL
+local Label = Instance.new("TextLabel")
+Label.BackgroundTransparency = 1
+Label.Text = "Enter amount"
+Label.Font = Enum.Font.GothamBold
+Label.TextColor3 = White
+Label.TextSize = 13
+Label.TextXAlignment = Enum.TextXAlignment.Left
+Label.Size = UDim2.new(0.58, 0, 0, 25)
+Label.Position = UDim2.new(0.36, 0, 0.10, 0)
+Label.Parent = Card
+
+-- TEXTBOX
+local InputBox = Instance.new("TextBox")
+InputBox.Name = "DiamondInput"
+InputBox.PlaceholderText = "1 - 9999"
+InputBox.Text = ""
+InputBox.ClearTextOnFocus = false
+InputBox.Font = Enum.Font.GothamBold
+InputBox.TextColor3 = White
+InputBox.PlaceholderColor3 = Muted
+InputBox.TextScaled = true
+InputBox.BackgroundColor3 = Color3.fromRGB(45, 25, 80)
+InputBox.BorderSizePixel = 0
+InputBox.Size = UDim2.new(0.70, 0, 0, 42)
+InputBox.Position = UDim2.new(0.15, 0, 0.39, 0)
+InputBox.Parent = Card
+
+local InputCorner = Instance.new("UICorner")
+InputCorner.CornerRadius = UDim.new(0, 9)
+InputCorner.Parent = InputBox
+
+local InputStroke = Instance.new("UIStroke")
+InputStroke.Color = LightPurple
+InputStroke.Thickness = 1
+InputStroke.Parent = InputBox
+
+-- INFO
+local Info = Instance.new("TextLabel")
+Info.BackgroundTransparency = 1
+Info.Text = "💎 Visual only — no real server changes."
+Info.Font = Enum.Font.Gotham
+Info.TextColor3 = Muted
+Info.TextSize = 10
+Info.TextWrapped = true
+Info.Size = UDim2.new(0.9, 0, 0.22, 0)
+Info.Position = UDim2.new(0.05, 0, 0.70, 0)
+Info.Parent = Card
+
+-- APPLY BUTTON
+local Apply = Instance.new("TextButton")
+Apply.Name = "Apply"
+Apply.Text = "💎  Add Diamonds"
+Apply.Font = Enum.Font.GothamBold
+Apply.TextColor3 = White
+Apply.TextScaled = true
+Apply.BackgroundColor3 = Purple
+Apply.Size = UDim2.new(0.88, 0, 0, 42)
+Apply.Position = UDim2.new(0.06, 0, 0.82, 0)
+Apply.Parent = Content
+
+local ApplyCorner = Instance.new("UICorner")
+ApplyCorner.CornerRadius = UDim.new(0, 10)
+ApplyCorner.Parent = Apply
+
+-- FIND DIAMONDCOUNT
+local function GetDiamondCount()
+	return PlayerGui:FindFirstChild("DiamondCount", true)
+end
+
+-- CHANGE DISPLAYED TEXT ONLY
+local function AddVisualDiamonds(Amount)
+	local DiamondCount = GetDiamondCount()
+
+	if not DiamondCount then
+		return false
+	end
+
+	local TextObject
+
+	if DiamondCount:IsA("TextLabel")
+		or DiamondCount:IsA("TextButton")
+		or DiamondCount:IsA("TextBox") then
+
+		TextObject = DiamondCount
+	else
+		TextObject =
+			DiamondCount:FindFirstChildWhichIsA("TextLabel", true)
+			or DiamondCount:FindFirstChildWhichIsA("TextButton", true)
+			or DiamondCount:FindFirstChildWhichIsA("TextBox", true)
+	end
+
+	if not TextObject then
+		return false
+	end
+
+	local CurrentAmount = tonumber(string.match(TextObject.Text, "%d+")) or 0
+	local NewAmount = math.clamp(CurrentAmount + Amount, 0, 999999999)
+
+	TextObject.Text = tostring(NewAmount)
+
+	return true
+end
+
+-- APPLY BUTTON FUNCTION
+Apply.MouseButton1Click:Connect(function()
+	local Amount = tonumber(InputBox.Text)
+
+	if not Amount then
+		Info.Text = "⚠ Enter a valid number."
+		return
+	end
+
+	Amount = math.floor(Amount)
+
+	if Amount < 1 or Amount > 9999 then
+		Info.Text = "⚠ Enter 1 to 9999 only."
+		return
+	end
+
+	if AddVisualDiamonds(Amount) then
+		Info.Text = "💎 Visually added: +" .. Amount
+		InputBox.Text = ""
+	else
+		Info.Text = "⚠ DiamondCount not found."
+	end
+end)
+
+-- SHOW BUTTON
+local Show = Instance.new("TextButton")
+Show.Name = "Show"
+Show.Text = "💎 Open Hub"
+Show.Font = Enum.Font.GothamBold
+Show.TextColor3 = White
+Show.TextScaled = true
+Show.BackgroundColor3 = Purple
+Show.Size = UDim2.fromOffset(125, 42)
+Show.Position = UDim2.new(0, 12, 0.5, -21)
+Show.Visible = false
+Show.Parent = Gui
+
+local ShowCorner = Instance.new("UICorner")
+ShowCorner.CornerRadius = UDim.new(0, 10)
+ShowCorner.Parent = Show
+
+-- HIDE
+Hide.MouseButton1Click:Connect(function()
+	Main.Visible = false
+	Show.Visible = true
+end)
+
+-- SHOW
+Show.MouseButton1Click:Connect(function()
+	Main.Visible = true
+	Show.Visible = false
+end)
+
+-- DRAGGABLE HEADER
+local Dragging = false
+local DragStart
+local StartPos
+
+Header.InputBegan:Connect(function(Input)
+	if Input.UserInputType == Enum.UserInputType.MouseButton1
+		or Input.UserInputType == Enum.UserInputType.Touch then
+
+		Dragging = true
+		DragStart = Input.Position
+		StartPos = Main.Position
+
+		Input.Changed:Connect(function()
+			if Input.UserInputState == Enum.UserInputState.End then
+				Dragging = false
+			end
+		end)
+	end
+end)
+
+UserInputService.InputChanged:Connect(function(Input)
+	if Dragging and (
+		Input.UserInputType == Enum.UserInputType.MouseMovement
+		or Input.UserInputType == Enum.UserInputType.Touch
+	) then
+
+		local Delta = Input.Position - DragStart
+
+		Main.Position = UDim2.new(
+			StartPos.X.Scale,
+			StartPos.X.Offset + Delta.X,
+			StartPos.Y.Scale,
+			StartPos.Y.Offset + Delta.Y
+		)
+	end
+end)
+
+-- PHONE-FRIENDLY OPEN ANIMATION
+local FinalSize = UDim2.fromScale(0.92, 0.62)
+
+Main.Size = UDim2.fromScale(0, 0)
+
+TweenService:Create(
+	Main,
+	TweenInfo.new(0.45, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+	{
+		Size = FinalSize
+	}
+):Play()
+
+print("Hanabisi Hub phone UI loaded — By itstryss")
