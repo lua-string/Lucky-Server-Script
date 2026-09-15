@@ -1,0 +1,664 @@
+
+--[[
+    HANABISI BOOSTER
+    PREMIUM NEON PURPLE EDITION
+    MOBILE FPS BOOSTER
+
+    FEATURES:
+    - Key System
+    - FPS Counter
+    - Movable FPS Overlay
+    - Lock FPS GUI
+    - Hide / Show Main UI
+    - FPS Boost
+]]
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local Lighting = game:GetService("Lighting")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+
+local Player = Players.LocalPlayer
+local PlayerGui = Player:WaitForChild("PlayerGui")
+
+local KEY = "322014"
+local GUI_NAME = "HanabisiBooster"
+
+-- Remove old UI
+local old = PlayerGui:FindFirstChild(GUI_NAME)
+if old then
+    old:Destroy()
+end
+
+-- =========================
+-- SETTINGS
+-- =========================
+
+local fpsEnabled = true
+local fpsLocked = false
+local boostEnabled = false
+local mainVisible = true
+
+local fps = 60
+local frames = 0
+local lastTime = os.clock()
+
+-- =========================
+-- COLORS
+-- =========================
+
+local Purple = Color3.fromRGB(174, 70, 255)
+local PurpleDark = Color3.fromRGB(35, 12, 65)
+local PurpleDeep = Color3.fromRGB(17, 8, 30)
+
+local White = Color3.fromRGB(255, 255, 255)
+local Gray = Color3.fromRGB(180, 170, 195)
+local Green = Color3.fromRGB(85, 255, 150)
+local Red = Color3.fromRGB(255, 80, 100)
+local Yellow = Color3.fromRGB(255, 220, 80)
+
+-- =========================
+-- HELPERS
+-- =========================
+
+local function new(class, props, parent)
+
+    local obj = Instance.new(class)
+
+    for prop, value in pairs(props) do
+        obj[prop] = value
+    end
+
+    obj.Parent = parent
+
+    return obj
+end
+
+local function corner(parent, radius)
+
+    return new("UICorner", {
+        CornerRadius = UDim.new(0, radius)
+    }, parent)
+
+end
+
+local function stroke(parent, color, thickness)
+
+    return new("UIStroke", {
+        Color = color,
+        Thickness = thickness
+    }, parent)
+
+end
+
+local function tween(obj, time, props)
+
+    TweenService:Create(
+        obj,
+        TweenInfo.new(
+            time,
+            Enum.EasingStyle.Quint,
+            Enum.EasingDirection.Out
+        ),
+        props
+    ):Play()
+
+end
+
+-- =========================
+-- SCREEN GUI
+-- =========================
+
+local Gui = new("ScreenGui", {
+    Name = GUI_NAME,
+    ResetOnSpawn = false,
+    IgnoreGuiInset = true,
+    ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+}, PlayerGui)
+
+-- =========================
+-- KEY SYSTEM
+-- =========================
+
+local KeyFrame = new("Frame", {
+    Size = UDim2.fromOffset(300, 215),
+    Position = UDim2.fromScale(0.5, 0.5),
+    AnchorPoint = Vector2.new(0.5, 0.5),
+    BackgroundColor3 = PurpleDeep,
+    BorderSizePixel = 0
+}, Gui)
+
+corner(KeyFrame, 18)
+stroke(KeyFrame, Purple, 2)
+
+new("TextLabel", {
+    Size = UDim2.new(1, 0, 0, 45),
+    Position = UDim2.fromOffset(0, 14),
+    BackgroundTransparency = 1,
+    Text = "HANABISI BOOSTER",
+    TextColor3 = White,
+    Font = Enum.Font.GothamBold,
+    TextSize = 21
+}, KeyFrame)
+
+new("TextLabel", {
+    Size = UDim2.new(1, -30, 0, 25),
+    Position = UDim2.fromOffset(15, 57),
+    BackgroundTransparency = 1,
+    Text = "PREMIUM ACCESS SYSTEM",
+    TextColor3 = Gray,
+    Font = Enum.Font.Gotham,
+    TextSize = 12
+}, KeyFrame)
+
+local KeyBox = new("TextBox", {
+    Size = UDim2.new(1, -40, 0, 42),
+    Position = UDim2.fromOffset(20, 91),
+    BackgroundColor3 = Color3.fromRGB(28, 14, 48),
+    PlaceholderText = "Enter key...",
+    PlaceholderColor3 = Color3.fromRGB(130, 110, 150),
+    Text = "",
+    TextColor3 = White,
+    Font = Enum.Font.GothamBold,
+    TextSize = 17,
+    ClearTextOnFocus = false
+}, KeyFrame)
+
+corner(KeyBox, 10)
+stroke(KeyBox, Purple, 1)
+
+local Verify = new("TextButton", {
+    Size = UDim2.new(1, -40, 0, 40),
+    Position = UDim2.fromOffset(20, 145),
+    BackgroundColor3 = Purple,
+    Text = "UNLOCK  ✦",
+    TextColor3 = White,
+    Font = Enum.Font.GothamBold,
+    TextSize = 14,
+    AutoButtonColor = false
+}, KeyFrame)
+
+corner(Verify, 10)
+
+local Status = new("TextLabel", {
+    Size = UDim2.new(1, -30, 0, 20),
+    Position = UDim2.fromOffset(15, 188),
+    BackgroundTransparency = 1,
+    Text = "",
+    TextColor3 = Red,
+    Font = Enum.Font.Gotham,
+    TextSize = 11
+}, KeyFrame)
+
+-- =========================
+-- FPS OVERLAY
+-- =========================
+
+local FPSOverlay = new("TextLabel", {
+    Name = "FPSOverlay",
+    Size = UDim2.fromOffset(125, 42),
+    Position = UDim2.fromOffset(15, 80),
+    BackgroundColor3 = Color3.fromRGB(25, 10, 45),
+    BackgroundTransparency = 0.1,
+    Text = "FPS: 60",
+    TextColor3 = Green,
+    Font = Enum.Font.GothamBold,
+    TextSize = 17,
+    Active = true,
+    Visible = false,
+    ZIndex = 20
+}, Gui)
+
+corner(FPSOverlay, 10)
+stroke(FPSOverlay, Purple, 2)
+
+-- =========================
+-- MAIN UI
+-- =========================
+
+local Main = new("Frame", {
+    Size = UDim2.fromOffset(330, 340),
+    Position = UDim2.fromScale(0.5, 0.5),
+    AnchorPoint = Vector2.new(0.5, 0.5),
+    BackgroundColor3 = PurpleDeep,
+    BorderSizePixel = 0,
+    Visible = false
+}, Gui)
+
+corner(Main, 18)
+stroke(Main, Purple, 2)
+
+-- Header
+local Header = new("Frame", {
+    Size = UDim2.new(1, 0, 0, 65),
+    BackgroundColor3 = PurpleDark,
+    BorderSizePixel = 0
+}, Main)
+
+corner(Header, 18)
+
+new("TextLabel", {
+    Size = UDim2.new(1, -120, 0, 30),
+    Position = UDim2.fromOffset(18, 10),
+    BackgroundTransparency = 1,
+    Text = "HANABISI BOOSTER",
+    TextColor3 = White,
+    Font = Enum.Font.GothamBold,
+    TextSize = 19,
+    TextXAlignment = Enum.TextXAlignment.Left
+}, Header)
+
+new("TextLabel", {
+    Size = UDim2.new(1, -120, 0, 20),
+    Position = UDim2.fromOffset(18, 37),
+    BackgroundTransparency = 1,
+    Text = "PREMIUM  •  PERFORMANCE",
+    TextColor3 = Purple,
+    Font = Enum.Font.GothamBold,
+    TextSize = 10,
+    TextXAlignment = Enum.TextXAlignment.Left
+}, Header)
+
+local HideButton = new("TextButton", {
+    Size = UDim2.fromOffset(65, 30),
+    Position = UDim2.new(1, -75, 0, 17),
+    BackgroundColor3 = Purple,
+    Text = "HIDE",
+    TextColor3 = White,
+    Font = Enum.Font.GothamBold,
+    TextSize = 11,
+    AutoButtonColor = false
+}, Header)
+
+corner(HideButton, 10)
+
+-- Main tab label
+new("TextLabel", {
+    Size = UDim2.new(1, -30, 0, 25),
+    Position = UDim2.fromOffset(15, 77),
+    BackgroundTransparency = 1,
+    Text = "FPS BOOSTER",
+    TextColor3 = White,
+    Font = Enum.Font.GothamBold,
+    TextSize = 15,
+    TextXAlignment = Enum.TextXAlignment.Left
+}, Main)
+
+-- FPS display
+local FPSLabel = new("TextLabel", {
+    Size = UDim2.new(1, -30, 0, 48),
+    Position = UDim2.fromOffset(15, 108),
+    BackgroundColor3 = Color3.fromRGB(27, 13, 45),
+    Text = "FPS: 60",
+    TextColor3 = Green,
+    Font = Enum.Font.GothamBold,
+    TextSize = 22
+}, Main)
+
+corner(FPSLabel, 12)
+stroke(FPSLabel, Color3.fromRGB(65, 35, 90), 1)
+
+-- =========================
+-- TOGGLE FUNCTION
+-- =========================
+
+local function makeToggle(text, y, default, callback)
+
+    local holder = new("Frame", {
+        Size = UDim2.new(1, -30, 0, 48),
+        Position = UDim2.fromOffset(15, y),
+        BackgroundColor3 = Color3.fromRGB(27, 13, 45),
+        BorderSizePixel = 0
+    }, Main)
+
+    corner(holder, 12)
+
+    new("TextLabel", {
+        Size = UDim2.new(1, -95, 1, 0),
+        Position = UDim2.fromOffset(14, 0),
+        BackgroundTransparency = 1,
+        Text = text,
+        TextColor3 = White,
+        Font = Enum.Font.GothamBold,
+        TextSize = 13,
+        TextXAlignment = Enum.TextXAlignment.Left
+    }, holder)
+
+    local button = new("TextButton", {
+        Size = UDim2.fromOffset(65, 30),
+        Position = UDim2.new(1, -75, 0.5, -15),
+        BackgroundColor3 = default and Purple
+            or Color3.fromRGB(65, 50, 75),
+        Text = default and "ON" or "OFF",
+        TextColor3 = White,
+        Font = Enum.Font.GothamBold,
+        TextSize = 11,
+        AutoButtonColor = false
+    }, holder)
+
+    corner(button, 10)
+
+    local state = default
+
+    button.MouseButton1Click:Connect(function()
+
+        state = not state
+
+        tween(button, 0.2, {
+            BackgroundColor3 = state and Purple
+                or Color3.fromRGB(65, 50, 75)
+        })
+
+        button.Text = state and "ON" or "OFF"
+
+        callback(state)
+
+    end)
+
+    return holder
+end
+
+-- =========================
+-- TOGGLES
+-- =========================
+
+makeToggle("SHOW FPS", 166, true, function(state)
+
+    fpsEnabled = state
+    FPSLabel.Visible = state
+    FPSOverlay.Visible = state
+
+end)
+
+makeToggle("FPS BOOST", 220, false, function(state)
+
+    boostEnabled = state
+
+    if state then
+
+        -- Client-side graphics optimization
+        Lighting.GlobalShadows = false
+        Lighting.EnvironmentDiffuseScale = 0
+        Lighting.EnvironmentSpecularScale = 0
+
+        for _, obj in ipairs(workspace:GetDescendants()) do
+
+            if obj:IsA("ParticleEmitter")
+            or obj:IsA("Trail")
+            or obj:IsA("Beam")
+            or obj:IsA("Smoke")
+            or obj:IsA("Fire")
+            or obj:IsA("Sparkles")
+            or obj:IsA("PostEffect") then
+
+                obj.Enabled = false
+
+            end
+        end
+
+    else
+
+        Lighting.GlobalShadows = true
+        Lighting.EnvironmentDiffuseScale = 1
+        Lighting.EnvironmentSpecularScale = 1
+
+    end
+
+end)
+
+makeToggle("LOCK FPS GUI", 274, false, function(state)
+
+    fpsLocked = state
+
+    if state then
+        FPSOverlay.Text = "FPS: " .. tostring(fps) .. " 🔒"
+    else
+        FPSOverlay.Text = "FPS: " .. tostring(fps)
+    end
+
+end)
+
+-- =========================
+-- HIDE / SHOW UI
+-- =========================
+
+local ShowButton = new("TextButton", {
+    Size = UDim2.fromOffset(120, 40),
+    Position = UDim2.fromOffset(15, 15),
+    BackgroundColor3 = Purple,
+    Text = "SHOW UI",
+    TextColor3 = White,
+    Font = Enum.Font.GothamBold,
+    TextSize = 13,
+    Visible = false,
+    AutoButtonColor = false,
+    ZIndex = 30
+}, Gui)
+
+corner(ShowButton, 12)
+stroke(ShowButton, Purple, 1)
+
+local function showMain()
+
+    Main.Visible = true
+    ShowButton.Visible = false
+    mainVisible = true
+
+end
+
+local function hideMain()
+
+    Main.Visible = false
+    ShowButton.Visible = true
+    mainVisible = false
+
+end
+
+HideButton.MouseButton1Click:Connect(hideMain)
+ShowButton.MouseButton1Click:Connect(showMain)
+
+-- =========================
+-- MOVABLE FPS OVERLAY
+-- =========================
+
+local draggingFPS = false
+local dragStartFPS
+local startPosFPS
+
+FPSOverlay.InputBegan:Connect(function(input)
+
+    if fpsLocked then return end
+
+    if input.UserInputType == Enum.UserInputType.MouseButton1
+    or input.UserInputType == Enum.UserInputType.Touch then
+
+        draggingFPS = true
+        dragStartFPS = input.Position
+        startPosFPS = FPSOverlay.Position
+
+    end
+
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+
+    if draggingFPS and not fpsLocked then
+
+        if input.UserInputType == Enum.UserInputType.MouseMovement
+        or input.UserInputType == Enum.UserInputType.Touch then
+
+            local delta = input.Position - dragStartFPS
+
+            FPSOverlay.Position = UDim2.new(
+                startPosFPS.X.Scale,
+                startPosFPS.X.Offset + delta.X,
+                startPosFPS.Y.Scale,
+                startPosFPS.Y.Offset + delta.Y
+            )
+
+        end
+
+    end
+
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+
+    if input.UserInputType == Enum.UserInputType.MouseButton1
+    or input.UserInputType == Enum.UserInputType.Touch then
+
+        draggingFPS = false
+
+    end
+
+end)
+
+-- =========================
+-- FPS COUNTER
+-- =========================
+
+RunService.RenderStepped:Connect(function()
+
+    frames += 1
+
+    local now = os.clock()
+
+    if now - lastTime >= 0.5 then
+
+        fps = math.floor(frames / (now - lastTime))
+        frames = 0
+        lastTime = now
+
+        FPSLabel.Text = "FPS: " .. tostring(fps)
+
+        if fps >= 50 then
+
+            FPSLabel.TextColor3 = Green
+            FPSOverlay.TextColor3 = Green
+
+        elseif fps >= 30 then
+
+            FPSLabel.TextColor3 = Yellow
+            FPSOverlay.TextColor3 = Yellow
+
+        else
+
+            FPSLabel.TextColor3 = Red
+            FPSOverlay.TextColor3 = Red
+
+        end
+
+        if fpsLocked then
+            FPSOverlay.Text = "FPS: " .. tostring(fps) .. " 🔒"
+        else
+            FPSOverlay.Text = "FPS: " .. tostring(fps)
+        end
+
+    end
+
+end)
+
+-- =========================
+-- KEY VERIFICATION
+-- =========================
+
+Verify.MouseButton1Click:Connect(function()
+
+    if KeyBox.Text == KEY then
+
+        Status.Text = "ACCESS GRANTED ✓"
+        Status.TextColor3 = Green
+
+        task.wait(0.5)
+
+        KeyFrame.Visible = false
+        Main.Visible = true
+        FPSOverlay.Visible = fpsEnabled
+
+        Main.Position = UDim2.fromScale(0.5, 0.6)
+
+        tween(Main, 0.35, {
+            Position = UDim2.fromScale(0.5, 0.5)
+        })
+
+    else
+
+        Status.Text = "INVALID KEY ✕"
+        Status.TextColor3 = Red
+
+        tween(KeyFrame, 0.1, {
+            Position = UDim2.fromScale(0.48, 0.5)
+        })
+
+        task.wait(0.1)
+
+        tween(KeyFrame, 0.1, {
+            Position = UDim2.fromScale(0.52, 0.5)
+        })
+
+        task.wait(0.1)
+
+        tween(KeyFrame, 0.1, {
+            Position = UDim2.fromScale(0.5, 0.5)
+        })
+
+    end
+
+end)
+
+-- =========================
+-- DRAGGABLE MAIN UI
+-- =========================
+
+local draggingMain = false
+local dragStartMain
+local startPosMain
+
+Header.InputBegan:Connect(function(input)
+
+    if input.UserInputType == Enum.UserInputType.MouseButton1
+    or input.UserInputType == Enum.UserInputType.Touch then
+
+        draggingMain = true
+        dragStartMain = input.Position
+        startPosMain = Main.Position
+
+    end
+
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+
+    if draggingMain then
+
+        if input.UserInputType == Enum.UserInputType.MouseMovement
+        or input.UserInputType == Enum.UserInputType.Touch then
+
+            local delta = input.Position - dragStartMain
+
+            Main.Position = UDim2.new(
+                startPosMain.X.Scale,
+                startPosMain.X.Offset + delta.X,
+                startPosMain.Y.Scale,
+                startPosMain.Y.Offset + delta.Y
+            )
+
+        end
+
+    end
+
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+
+    if input.UserInputType == Enum.UserInputType.MouseButton1
+    or input.UserInputType == Enum.UserInputType.Touch then
+
+        draggingMain = false
+
+    end
+
+end)
+
+print("Hanabisi Booster loaded!")
